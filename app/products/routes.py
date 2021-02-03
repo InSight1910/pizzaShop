@@ -6,7 +6,9 @@ from app.DB.product.models import (
     create_product,
     remove_product_by_id,
     remove_product_by_name,
+    update_product_by_name,
 )
+
 from flask import request
 
 
@@ -23,7 +25,9 @@ def name(name):
     if request.method == "GET":
         return get_products_for_name(name)
     if request.method == "DELETE":
-        return delete_products_for_name(name)
+        return remove_product_by_name(name)
+    if request.method == "PUT":
+        return update_product_by_name(name, {"name": "ppp", "description": "pppp"})
 
 
 @products.route("id/<id>", methods=["GET", "DELETE", "PUT"])

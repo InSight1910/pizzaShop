@@ -1,6 +1,7 @@
 from .. import db
 from bson import ObjectId
 
+
 collection = db["products"]
 
 
@@ -81,3 +82,15 @@ def remove_product_by_name(name):
         "documents_deleted": querry.deleted_count,
         "document_deleted": document,
     }
+
+
+def update_product_by_name(name, new_body):
+    document = collection.update_one(
+        {"name": name},
+        {"$set": {"name": new_body["name"], "description": new_body["description"]}},
+    )
+    return document
+
+
+def update_product_by_id(id):
+    pass
