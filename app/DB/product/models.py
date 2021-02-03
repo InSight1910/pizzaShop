@@ -1,7 +1,6 @@
 from .. import db
 from bson import ObjectId
 
-
 collection = db["products"]
 
 
@@ -85,12 +84,93 @@ def remove_product_by_name(name):
 
 
 def update_product_by_name(name, new_body):
-    document = collection.update_one(
-        {"name": name},
-        {"$set": {"name": new_body["name"], "description": new_body["description"]}},
-    )
-    return document
+    old_product = collection.find({"name": name})
+    if old_product.count() == 0:
+        return {"error": True, "status": "Unsuccefully", "code": 404}
+    extra_ingredients = [
+        "Ham",
+        "Pepperoni",
+        "Chicken",
+        "Pulled Pork",
+        "Italian Sausage",
+        "Beacon",
+        "Black Olive",
+        "Purple Onion",
+        "Mushroom",
+        "Corn",
+        "Green Pepper",
+        "Pineapple",
+        "Tomato",
+        "Tomato Cherry",
+        "Extra Cheese",
+        "BBQ Shot",
+        "Shot of Pesto",
+    ]
+    old_product = old_product[0]
+    updated_body = {"extra_ingredients": extra_ingredients}
+    for key in new_body.keys():
+        if not key == "name":
+            updated_body["name"] = old_product["name"]
+        else:
+            updated_body["name"] = new_body["name"]
+        if not key == "description":
+            updated_body["description"] = old_product["description"]
+        else:
+            updated_body["description"] = new_body["description"]
+    print(collection.find({"name": updated_body["name"]}).count())
+    if collection.find({"name": updated_body["name"]}).count() == 0:
+        collection.update_one(
+            {"name": name},
+            {"$set": updated_body},
+        )
+        product = collection.find({"name": updated_body["name"]})[0]
+        product["_id"] = str(product["_id"])
+        return product
+    return {}
 
 
-def update_product_by_id(id):
-    pass
+def update_product_by_id(id, new_body):
+    old_product = collection.find({"_id": ObjectId(id)})
+    if old_product.count() == 0:
+        return {"error": True, "status": "Unsuccefully", "code": 404}
+    extra_ingredients = [
+        "Ham",
+        "Pepperoni",
+        "Chicken",
+        "Pulled Pork",
+        "Italian Sausage",
+        "Beacon",
+        "Black Olive",
+        "Purple Onion",
+        "Mushroom",
+        "Corn",
+        "Green Pepper",
+        "Pineapple",
+        "Tomato",
+        "Tomato Cherry",
+        "Extra Cheese",
+        "BBQ Shot",
+        "Shot of Pesto",
+    ]
+    old_product = old_product[0]
+    updated_body = {"extra_ingredients": extra_ingredients}
+    for key in new_body.keys():
+        if not key == "name":
+            updated_body["name"] = old_product["name"]
+        else:
+            updated_body["name"] = new_body["name"]
+        if not key == "description":
+            updated_body["description"] = old_product["description"]
+        else:
+            updated_body["description"] = new_body["description"]
+
+    if collection.find({"name": updated_body["name"]}).count() == 0:
+        update = collection.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": updated_body},
+        )
+        product = collection.find({"_id": ObjectId(id)})[0]
+        product["_id"] = str(product["_id"])
+        print(product)
+        return product
+    return {}
