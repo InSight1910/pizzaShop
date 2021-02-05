@@ -14,51 +14,65 @@ def get_products():
 
 
 def get_products_for_name(name):
-    results = collection.find({"name": name}).next()
-    results["_id"] = str(results["_id"])
-    return {"error": False, "body": results}
+    if name != "":
+        try:
+            results = collection.find({"name": name}).next()
+            results["_id"] = str(results["_id"])
+            return {"error": False, "body": results}
+        except StopIteration:
+            return {"error": True, "body": "We didn't find any product with that name"}
+    return {"error": True, "body": "You've to provide a product name"}
 
 
 def get_products_by_id(id):
-    results = collection.find({"_id": ObjectId(id)}).next()
-    results["_id"] = str(results["_id"])
-    return {"error": False, "body": results}
+    if id != "":
+        try:
+            results = collection.find({"_id": ObjectId(id)}).next()
+            results["_id"] = str(results["_id"])
+            return {"error": False, "body": results}
+        except StopIteration:
+            return {"error": True, "body": "We did not find any product with that name"}
+    return {"error": True, "body": "You've to provide a product id "}
 
 
 def create_product(body):
-    product_inserted = {
-        "name": body["name"],
-        "description": body["description"],
-    }
-    extra_ingredients = [
-        "Ham",
-        "Pepperoni",
-        "Chicken",
-        "Pulled Pork",
-        "Italian Sausage",
-        "Beacon",
-        "Black Olive",
-        "Purple Onion",
-        "Mushroom",
-        "Corn",
-        "Green Pepper",
-        "Pineapple",
-        "Tomato",
-        "Tomato Cherry",
-        "Extra Cheese",
-        "BBQ Shot",
-        "Shot of Pesto",
-    ]
-    product_inserted["extra_ingredients"] = extra_ingredients
-    if collection.find({"name": body["name"]}).count() == 0:
-        querry = collection.insert_one(product_inserted)
-        result = get_products_by_id(querry.inserted_id)
-        return {
-            "error": False,
-            "inserted_count_document": querry.acknowledged,
-            "inserted_document": result,
-        }
-    return {"error": True, "body": "The product already exists"}
+    if "name" in body:
+        if "description" in body:
+            product_inserted = {
+                "name": body["name"],
+                "description": body["description"],
+            }
+            extra_ingredients = [
+                "Ham",
+                "Pepperoni",
+                "Chicken",
+                "Pulled Pork",
+                "Italian Sausage",
+                "Beacon",
+                "Black Olive",
+                "Purple Onion",
+                "Mushroom",
+                "Corn",
+                "Green Pepper",
+                "Pineapple",
+                "Tomato",
+                "Tomato Cherry",
+                "Extra Cheese",
+                "BBQ Shot",
+                "Shot of Pesto",
+            ]
+            product_inserted["extra_ingredients"] = extra_ingredients
+            if collection.find({"name": body["name"]}).count() == 0:
+                querry = collection.insert_one(product_inserted)
+                result = get_products_by_id(querry.inserted_id)
+                return {
+                    "error": False,
+                    "inserted_count_document": querry.acknowledged,
+                    "inserted_document": result,
+                }
+            return {"error": True, "body": "The product already exists"}
+        return {"error": True, "body": "You have to provide a product description"}
+    return {"error": True, "body": "You have to provide a product name"}
 
 
 def remove_product_by_id(id):
@@ -117,7 +131,7 @@ def update_product_by_name(name, new_body):
             updated_body["description"] = old_product["description"]
         else:
             updated_body["description"] = new_body["description"]
-    print(collection.find({"name": updated_body["name"]}).count())
+
     if collection.find({"name": updated_body["name"]}).count() == 0:
         collection.update_one(
             {"name": name},
@@ -171,6 +185,5 @@ def update_product_by_id(id, new_body):
         )
         product = collection.find({"_id": ObjectId(id)})[0]
         product["_id"] = str(product["_id"])
-        print(product)
         return product
     return {}

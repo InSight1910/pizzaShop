@@ -1,3 +1,4 @@
+from flask_login.utils import login_required
 from . import products
 from app.DB.product.models import (
     get_products,
@@ -14,9 +15,11 @@ from flask import request
 
 
 @products.route("", methods=["GET", "POST"])
+@login_required
 def all():
     if request.method == "GET":
-        return get_products()
+        result = get_products()
+        return result
     if request.method == "POST":
         return create_product(request.json)
 
