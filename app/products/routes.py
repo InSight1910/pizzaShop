@@ -1,4 +1,3 @@
-from flask_login.utils import login_required
 from . import products
 from app.DB.product.models import (
     get_products,
@@ -11,17 +10,21 @@ from app.DB.product.models import (
     update_product_by_id,
 )
 
+from flask_jwt import jwt_required
 from flask import request
 
 
-@products.route("", methods=["GET", "POST"])
-@login_required
+@products.route("")
 def all():
-    if request.method == "GET":
-        result = get_products()
-        return result
-    if request.method == "POST":
-        return create_product(request.json)
+    result = get_products()
+    return result
+
+
+@products.route("", methods=["POST"])
+@jwt_required()
+def create_products():
+    result = create_product(request.json)
+    return result
 
 
 @products.route("name/<name>", methods=["GET", "DELETE", "PUT"])

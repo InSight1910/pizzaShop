@@ -1,24 +1,26 @@
-from app import auth
 from flask import Flask
-from flask_login import LoginManager, login_manager
+from flask_jwt import JWT
+from flask_mail import Mail
 from app.config import Config
 
 from .products import products
 from .auth import auth
-from app.DB.auth.user import UserModel
 
-login = LoginManager()
+from app.utils.securityJWT import authentication, identity
 
-
-@login.user_loader
-def load_user(user):
-    return UserModel.query(user)
+jwt = JWT(authentication_handler=authentication, identity_handler=identity)
+mail = Mail()
 
 
 def create_app():
     app = Flask(__name__)
+
     app.config.from_object(Config)
+
     app.register_blueprint(products)
     app.register_blueprint(auth)
-    login.init_app(app)
+
+    jwt.init_app(app)
+    mail.init_app(app)
+
     return app
