@@ -58,15 +58,22 @@ def get_products_by_id(id):
 
 def create_product(body):
     if "name" not in body:
-        return {"error": True, "body": "You have to provide a product name"}
-    if "description" not in body:
-        return {"error": True, "body": "You have to provide a product description"}
-    if collection.find({"name": body["name"]}).count() == 0:
+        return {"error": True, "body": "You have to provide a product name."}
+    if "ingredients" not in body:
+        return {
+            "error": True,
+            "body": "You have to provide ingredients of the product.",
+        }
+    if "price" not in body:
+        return {"error": True, "body": "You have to provide product price."}
+
+    if collection.find_one({"name": body["name"]}):
         return {"error": True, "body": "The product already exists"}
 
     product_inserted = {
         "name": body["name"],
-        "description": body["description"],
+        "ingredients": body["ingredients"],
+        "price": body["price"],
     }
     product_inserted["extra_ingredients"] = extra_ingredients
     querry = collection.insert_one(product_inserted)

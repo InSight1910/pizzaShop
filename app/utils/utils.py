@@ -5,7 +5,6 @@ def create_product_object(result) -> dict:
     product = ProductData(
         result["_id"],
         result["name"],
-        result["description"],
         result["extra_ingredients"],
     )
     return product.product()

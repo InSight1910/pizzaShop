@@ -1,14 +1,23 @@
 from bson import ObjectId
 from .. import db
 from flask_mail import Message
-from app import mail
-from app.utils.utils import create_user_object, create_token_object
-from werkzeug.security import generate_password_hash, check_password_hash
+from app.utils.utils import (
+    create_user_object,
+    create_token_object,
+)
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash,
+)
+from app.DB.product.models import (
+    get_products_for_name,
+)
 import secrets, datetime
 
 collection_user = db["user"]
 collection_auth = db["authentication"]
 collection_token = db["token"]
+collection_products = db["products"]
 
 
 def get_user(data):
@@ -47,6 +56,8 @@ def change_password(data):
     msg.body = (
         f'http://localhost:5000/changePassword?token={token}&user_id={user["_id"]}'
     )
+    from app import mail
+
     mail.send(msg)
     return msg.body
 
@@ -60,3 +71,22 @@ def changing_password(token, user_id, password):
             {"_id": ObjectId(user_id)}, {"$set": {"password": hash_password}}
         )
         return {}
+
+
+def add_orders(data):
+    try:
+        user = get_user(data["user"])
+        product = collection_products.find({"name": data["order"]["name"]}).next()
+        order_object = {
+            "name": product["name"],
+            "price": 100,
+            "amount": data["order"]["amount"],
+            "status": "completed",
+        }
+        user["orders"].append(order_object)
+        collection_user.update_one(
+            {"_id": ObjectId(user["_id"])}, {"$set": {"orders": user["orders"]}}
+        )
+        return {}
+    except StopIteration:
+        return {"error": True}

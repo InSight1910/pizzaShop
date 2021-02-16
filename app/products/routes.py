@@ -9,19 +9,23 @@ from app.DB.product.models import (
     update_product_by_name,
     update_product_by_id,
 )
+from app.DB.user.models import (
+    add_orders,
+)
 
-from flask_jwt import jwt_required
+
 from flask import request
+from ..utils.securityJWT import token_required
 
 
 @products.route("")
+@token_required
 def all():
     result = get_products()
     return result
 
 
 @products.route("", methods=["POST"])
-@jwt_required()
 def create_products():
     result = create_product(request.json)
     return result
@@ -45,3 +49,8 @@ def id(id):
         return remove_product_by_id(id)
     if request.method == "PUT":
         return update_product_by_id(id, request.json)
+
+
+@products.route("addOrder", methods=["PUT"])
+def addOrder():
+    return add_orders(request.json)

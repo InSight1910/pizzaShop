@@ -1,28 +1,28 @@
-from bson.objectid import ObjectId
-from werkzeug.security import safe_str_cmp
-from app.models import AuthData
-from werkzeug.security import check_password_hash
-from app.DB import db
-from .utils import create_auth_object, create_product_object, create_user_object
+from flask import request, jsonify
+from ..config import Config
+from app.DB.auth.models import get_user_auth
+from functools import wraps
+import jwt
 
 
-collection_auth = db["authentication"]
-collection_user = db["user"]
+def token_required(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
 
+        token = None
 
-def authentication(username, password):
-    try:
-        result = collection_auth.find({"username": username}).next()
-        user = create_auth_object(result)
-        if user and check_password_hash(user.password, password):
-            return user
-    except StopIteration:
-        return {"error": True, "message": "Username not found"}
+        if "token" in request.headers:
+            token = request.headers["token"]
 
+        if not token:
+            return jsonify({"message": "a valid token is missing"})
 
-def identity(payload):
-    user_id = payload["identity"]
-    result_auth = collection_auth.find({"_id": ObjectId(user_id)})[0]["user_id"]
-    result_user = collection_user.find({"id": result_auth})[0]
-    user = create_user_object(result_user)
-    return user
+        try:
+            data = jwt.decode(token, Config.SECRET_KEY, algorithms=["HS256"])
+            current_user = get_user_auth(data["_id"])
+        except:
+            return jsonify({"message": "token is invalid"})
+
+        return f(current_user, *args, **kwargs)
+
+    return decorator

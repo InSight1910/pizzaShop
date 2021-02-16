@@ -1,22 +1,30 @@
-from app import create_app
-from app.DB.product.models import get_products
-from app.DB.user.models import get_user, change_password, changing_password
+from app.DB.product.models import *
+from app.DB.user.models import *
+from app.DB.auth.models import *
 from flask import redirect, request
 import time
+
+from app import create_app
+from app.utils.securityJWT import token_required
 
 app = create_app()
 
 
-@app.route("/")
+@app.route("/", methods=["POST", "GET"])
 def index():
-    return change_password(request.data.decode())
+    return {}
+
+
+@app.route("/lll", methods=["GET"])
+@token_required
+def index1(f):
+    return get_products()
 
 
 @app.route("/changePassword")
 def password():
-    data = request.url.split("?")[1]
-    token = data.split("token=")[1].split("&")[0]
-    user_id = data.split("user_id=")[1]
+    user_id = request.args.get("user_id")
+    token = request.args.get("token")
 
     return changing_password(token, user_id, request.data.decode())
 

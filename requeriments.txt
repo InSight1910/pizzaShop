@@ -1,5 +1,6 @@
 flask
-flask-jwt
 flask-mail
 pymongo
 dnspython
+pyjwt
+email-validator

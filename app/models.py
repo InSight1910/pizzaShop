@@ -5,11 +5,15 @@ from flask import jsonify
 class AuthData:
     def __init__(self, id, username, password):
         self.id = str(id)
-        self._username = username
-        self._password = password
+        self.username = username
+        self.password = password
 
     def auth(self):
-        return {"_id": self.id, "_username": self.username, "_password": self.password}
+        return {
+            "id": self.id,
+            "username": self.username,
+            "password": self.password,
+        }
 
 
 class UserData:
@@ -23,7 +27,7 @@ class UserData:
 
     def user(self):
         return {
-            "_id": self._id,
+            "id": self._id,
             "username": self.username,
             "name": self.name,
             "email": self.email,
@@ -33,17 +37,16 @@ class UserData:
 
 
 class ProductData:
-    def __init__(self, id, name, description, extra_ingredients):
+    def __init__(self, id, name, extra_ingredients):
         self._id = str(id)
         self.name = name
-        self.description = description
+
         self.extra_ingredients = extra_ingredients
 
     def product(self):
         return {
             "_id": self._id,
             "name": self.name,
-            "description": self.description,
             "extra_ingredients": self.extra_ingredients,
         }
 
