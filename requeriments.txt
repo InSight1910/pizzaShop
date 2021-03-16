@@ -4,3 +4,4 @@ pymongo
 dnspython
 pyjwt
 email-validator
+flask_swagger_ui

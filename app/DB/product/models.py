@@ -42,7 +42,7 @@ def get_products_for_name(name):
         product = create_product_object(results)
         return {"error": False, "body": product.product()}
     except StopIteration:
-        return {"error": True, "body": "We didn't find any product with that name"}
+        return {"error": True, "body": "We didn't find any product with that name"}, 404
 
 
 def get_products_by_id(id):
@@ -57,18 +57,28 @@ def get_products_by_id(id):
 
 
 def create_product(body):
-    if "name" not in body:
-        return {"error": True, "body": "You have to provide a product name."}
-    if "ingredients" not in body:
-        return {
-            "error": True,
-            "body": "You have to provide ingredients of the product.",
-        }
-    if "price" not in body:
-        return {"error": True, "body": "You have to provide product price."}
+    if body:
+        if "name" not in body:
+            return {
+                "error": True,
+                "body": "You have to provide a product name.",
+            }, 405
+        if "ingredients" not in body:
+            return {
+                "error": True,
+                "body": "You have to provide ingredients of the product.",
+            }, 405
+        if "price" not in body:
+            return {
+                "error": True,
+                "body": "You have to provide product price.",
+            }, 405
 
-    if collection.find_one({"name": body["name"]}):
-        return {"error": True, "body": "The product already exists"}
+        if collection.find_one({"name": body["name"]}):
+            return {
+                "error": True,
+                "body": "The product already exists",
+            }, 405
 
     product_inserted = {
         "name": body["name"],
@@ -89,6 +99,7 @@ def remove_product_by_id(id):
     if id == "":
         return {"error": True, "body": "You have to provide a id of a product."}
     document = get_products_by_id(id)
+
     querry = collection.delete_one({"_id": ObjectId(id)})
     return {
         "error": False,
@@ -100,8 +111,10 @@ def remove_product_by_id(id):
 
 def remove_product_by_name(name):
     if name == "":
-        return {"error": True, "body": "You have to provide a name of a product."}
+        return {"error": True, "body": "You have to provide a name of a product."}, 405
     document = get_products_for_name(name)
+    if document["error"]:
+        return document
     querry = collection.delete_one({"name": name})
     return {
         "error": False,

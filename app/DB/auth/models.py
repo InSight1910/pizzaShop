@@ -1,9 +1,10 @@
+from app.utils.utils import create_product_object, create_user_object
 from .. import db
 
 from pymongo.errors import DuplicateKeyError
 from bson import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
-import secrets, jwt
+import jwt
 from ...config import Config
 from flask import request
 from email_validator import EmailNotValidError, validate_email
@@ -15,40 +16,33 @@ collection_user = db["user"]
 
 def sign_up(body):
     if "name" not in body:
-        return {"error": True, "body": "You must provide a name"}
+        return {"error": True, "body": "You must provide a name"}, 405
     if "username" not in body:
-        return {"error": True, "body": "You must provide a username"}
+        return {"error": True, "body": "You must provide a username"}, 405
     if "email" not in body:
-        return {"error": True, "body": "You must provide a email"}
+        return {"error": True, "body": "You must provide a email"}, 405
     if "address" not in body:
-        return {"error": True, "body": "You must provide a address"}
-    """ if not (
-        collection_auth.find({"username": body["username"]}).count() == 0
-        and collection_user.find({"username": body["username"]}).count() == 0
-    ):
-        return {"error": True, "body": "The username is already registered"} """
-    """ if not collection_user.find({"email": body["email"]}).count() == 0:
-        return {"error": True, "body": "The email is already registered"} """
+        return {"error": True, "body": "You must provide a address"}, 405
     try:
-        id = secrets.token_hex(12)
+
         valid_email = validate_email(body["email"])
         inserted_user = {
-            "_id": ObjectId(id),
             "name": body["name"],
             "username": body["username"],
             "email": valid_email.email,
             "address": body["address"],
             "orders": [],
         }
+        document_user = collection_user.insert_one(inserted_user)
+
         inserted_auth = {
-            "_id": ObjectId(id),
+            "_id": ObjectId(document_user.inserted_id),
             "username": body["username"],
             "password": generate_password_hash(password=body["password"]),
         }
-        collection_auth.insert_one(inserted_auth)
-        collection_user.insert_one(inserted_user)
+        document_auth = collection_auth.insert_one(inserted_auth)
 
-        result = collection_user.find_one({"_id": inserted_auth["_id"]})
+        result = collection_user.find_one({"_id": document_user.inserted_id})
         result["_id"] = str(result["_id"])
         return result
     except DuplicateKeyError as e:
@@ -60,7 +54,7 @@ def sign_up(body):
         return {
             "error": True,
             "message": str(e),
-        }
+        }, 405
 
 
 def sign_in():
@@ -71,7 +65,7 @@ def sign_in():
         timeLimit = datetime.utcnow() + timedelta(minutes=30)
         user = collection_user.find_one({"username": username})
         payload = {
-            "_id": str(user["_id"]),
+            "user": create_user_object(user),
             "exp": timeLimit,
         }
 

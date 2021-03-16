@@ -1,3 +1,4 @@
+from app.config import Config
 from bson import ObjectId
 from .. import db
 from flask_mail import Message
@@ -12,7 +13,7 @@ from werkzeug.security import (
 from app.DB.product.models import (
     get_products_for_name,
 )
-import secrets, datetime
+import secrets, datetime, jwt
 
 collection_user = db["user"]
 collection_auth = db["authentication"]
@@ -22,7 +23,8 @@ collection_products = db["products"]
 
 def get_user(data):
     try:
-        user = collection_user.find({"username": data}).next()
+        print(data)
+        user = collection_user.find({"_id": ObjectId(data)}).next()
         user_object = create_user_object(user)
         return user_object
     except StopIteration:
@@ -59,34 +61,37 @@ def change_password(data):
     from app import mail
 
     mail.send(msg)
-    return msg.body
+    return {"message": msg.body}, 201
 
 
 def changing_password(token, user_id, password):
-    token_bd = collection_token.find({"_id": ObjectId(user_id)})[0]["token"]
+    token_bd = collection_token.find_one({"_id": ObjectId(user_id)})["token"]
     valid = check_password_hash(token_bd, token)
     if valid:
         hash_password = generate_password_hash(password)
         collection_auth.update_one(
             {"_id": ObjectId(user_id)}, {"$set": {"password": hash_password}}
         )
-        return {}
+        return {"message": "The password was changed successfully."}, 200
+    return {"error": True, "message": "Invalid Token"}, 401
 
 
-def add_orders(data):
+def add_orders(data, token):
     try:
-        user = get_user(data["user"])
-        product = collection_products.find({"name": data["order"]["name"]}).next()
+        user = token
+        product = collection_products.find(
+            {"_id": ObjectId(data["orders"]["_id"])}
+        ).next()
         order_object = {
             "name": product["name"],
-            "price": 100,
-            "amount": data["order"]["amount"],
+            "price": product["price"],
+            "amount": data["orders"]["amount"],
             "status": "completed",
         }
         user["orders"].append(order_object)
         collection_user.update_one(
-            {"_id": ObjectId(user["_id"])}, {"$set": {"orders": user["orders"]}}
+            {"_id": ObjectId(user["id"])}, {"$set": {"orders": user["orders"]}}
         )
         return {}
     except StopIteration:
-        return {"error": True}
+        return {"error": True, "body": "Product not found"}, 404

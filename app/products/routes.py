@@ -19,20 +19,21 @@ from ..utils.securityJWT import token_required
 
 
 @products.route("")
-@token_required
 def all():
     result = get_products()
     return result
 
 
 @products.route("", methods=["POST"])
-def create_products():
+@token_required
+def create_products(token):
     result = create_product(request.json)
     return result
 
 
 @products.route("name/<name>", methods=["GET", "DELETE", "PUT"])
-def name(name):
+@token_required
+def name(token, name):
     if request.method == "GET":
         return get_products_for_name(name)
     if request.method == "DELETE":
@@ -42,7 +43,8 @@ def name(name):
 
 
 @products.route("id/<id>", methods=["GET", "DELETE", "PUT"])
-def id(id):
+@token_required
+def id(token, id):
     if request.method == "GET":
         return get_products_by_id(id)
     if request.method == "DELETE":
@@ -50,7 +52,21 @@ def id(id):
     if request.method == "PUT":
         return update_product_by_id(id, request.json)
 
+    return {}
+
 
 @products.route("addOrder", methods=["PUT"])
-def addOrder():
-    return add_orders(request.json)
+@token_required
+def addOrder(token):
+    return add_orders(
+        request.json,
+        token,
+    )
+
+
+@products.errorhandler(404)
+def not_found(error):
+    return {
+        "error": True,
+        "body": "Sorry the page you are trying to access was not found",
+    }

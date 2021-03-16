@@ -1,0 +1,759 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "Pizza Shop"
+	},
+	"host": "localhost:5000",
+	"basePath": "/",
+	"schemes": ["http"],
+	"paths": {
+		"/products": {
+			"get": {
+				"tags": ["products"],
+				"summary": "Brings all the products created",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "Success operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["products"],
+				"summary": "Create a product",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"description": "Procuct Object needs to be added to the store",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/Products_Create"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					},
+					"405": {
+						"description": "Invalid Input"
+					}
+				}
+			}
+		},
+		"/products/name/{name}": {
+			"get": {
+				"tags": ["products"],
+				"summary": "Find Products by his name",
+				"description": "This path provide a product searching by his name",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "name",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "token",
+						"in": "header",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["products"],
+				"summary": "Delete Products by his name",
+				"description": "With this path you can delete a product by his name",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "name",
+						"in": "path",
+						"description": "The name of the product you wanna delete",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "token",
+						"in": "header",
+						"description": "You jwt token",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					},
+					"404": {
+						"description": "The product was not found",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"405": {
+						"description": "You have to provide a name",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"jwt": []
+					}
+				]
+			},
+			"put": {
+				"tags": ["products"],
+				"summary": "Update Products by his name",
+				"description": "With this path you can update the info of a Product with his name",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Object of the product to update",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/Products_Create"
+						}
+					},
+					{
+						"name": "name",
+						"in": "path",
+						"description": "The name of the product",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "token",
+						"in": "header",
+						"description": "The JWT token",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					},
+					"404": {
+						"description": "The product was not found",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"405": {
+						"description": "Invalid Input",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/products/id/{id}": {
+			"get": {
+				"tags": ["products"],
+				"summary": "Find Products by his id",
+				"description": "This path provide a product searching by his id",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "token",
+						"in": "header",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["products"],
+				"summary": "Delete Products by his id",
+				"description": "With this path you can delete a product by his id",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "The id of the product you wanna delete",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "token",
+						"in": "header",
+						"description": "You jwt token",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					},
+					"404": {
+						"description": "The product was not found",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"405": {
+						"description": "You have to provide a name",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"security": [
+					{
+						"jwt": []
+					}
+				]
+			},
+			"put": {
+				"tags": ["products"],
+				"summary": "Update Products by his id",
+				"description": "With this path you can update the info of a Product with his id",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"description": "Object of the product to update",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/Products_Create"
+						}
+					},
+					{
+						"name": "id",
+						"in": "path",
+						"description": "The id of the product",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "token",
+						"in": "header",
+						"description": "The JWT token",
+						"required": true,
+						"type": "string"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"schema": {
+							"$ref": "#/definitions/Products_Response"
+						}
+					},
+					"404": {
+						"description": "The product was not found",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"405": {
+						"description": "Invalid Input",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "boolean"
+								},
+								"body": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/products/addOrder": {
+			"put": {
+				"tags": ["products"],
+				"summary": "Add a order to the user object",
+				"description": "With this route you can add all the orders that the user makes",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/Order"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Operation successful",
+						"schema": {
+							"$ref": "#/definitions/User_Response"
+						}
+					},
+					"405": {
+						"description": "A data is missing",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/auth/signup": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "With this path you can make a account",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/User_Create"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Registered User",
+						"schema": {
+							"$ref": "#/definitions/User_Response"
+						}
+					},
+					"405": {
+						"description": "Invalid input",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/auth/signin": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "With this path you can make a login",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"security": [
+					{
+						"auth_basic": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Login succesful",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"Elapse_time": {
+									"type": "string",
+									"format": "date"
+								},
+								"error": {
+									"type": "string"
+								},
+								"message": {
+									"type": "string"
+								},
+								"token": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"405": {
+						"description": "Token is missing",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/change_password": {
+			"post": {
+				"tags": ["auth"],
+				"description": "With this path you can change your password passing a username or a email",
+				"consumes": ["application/json"],
+				"produces": ["application/json"],
+				"parameters": [
+					{
+						"name": "body",
+						"in": "body",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"username": {
+									"type": "string"
+								},
+								"email": {
+									"type": "string"
+								},
+								"password": {
+									"type": "string",
+									"format": "password"
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "The password was changed succesfully",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"201": {
+						"description": "We send you a email with a link to change the password",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"securityDefinitions": {
+		"auth_basic": {
+			"type": "basic"
+		},
+		"jwt": {
+			"type": "apiKey",
+			"name": "token",
+			"in": "header"
+		}
+	},
+	"definitions": {
+		"Order": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"order": {
+					"type": "object",
+					"properties": {
+						"_id": {
+							"type": "string"
+						},
+						"amount": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		},
+		"Products_Create": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"ingredients": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"description": "The ingredients of the pizza"
+				},
+				"price": {
+					"type": "number",
+					"format": "double"
+				}
+			}
+		},
+		"Products_Response": {
+			"type": "object",
+			"properties": {
+				"body": {
+					"type": "object",
+					"properties": {
+						"_id": {
+							"type": "string"
+						},
+						"name": {
+							"type": "string"
+						},
+						"ingredients": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "The ingredients of the pizza"
+						},
+						"price": {
+							"type": "number",
+							"format": "double"
+						},
+						"extra_ingredients": {
+							"type": "array",
+							"items": {},
+							"example": [
+								"Ham",
+								"Pepperoni",
+								"Chicken",
+								"Pulled Pork",
+								"Italian Sausage",
+								"Beacon",
+								"Black Olive",
+								"Purple Onion",
+								"Mushroom",
+								"Corn",
+								"Green Pepper",
+								"Pineapple",
+								"Tomato",
+								"Tomato Cherry",
+								"Extra Cheese",
+								"BBQ Shot",
+								"Shot of Pesto"
+							]
+						}
+					}
+				},
+				"error": {
+					"type": "boolean"
+				}
+			}
+		},
+		"User_Response": {
+			"type": "object",
+			"properties": {
+				"_id": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+				},
+				"username": {
+					"type": "string"
+				},
+				"email": {
+					"type": "string"
+				},
+				"address": {
+					"type": "string"
+				},
+				"orders": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"price": {
+								"type": "string"
+							},
+							"amount": {
+								"type": "integer"
+							},
+							"status": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			},
+			"example": {
+				"_id": "a96d83caa08f951596c581ba,",
+				"name": "Vicente",
+				"username": "admin2",
+				"email": "d1",
+				"address": "Paraguay",
+				"orders": [
+					{
+						"name": "BBQ Pork",
+						"price": "100$",
+						"amount": 1,
+						"status": "completed"
+					},
+					{
+						"name": "BBQ Pork",
+						"price": "100$",
+						"amount": 1,
+						"status": "completed"
+					}
+				]
+			}
+		},
+		"User_Create": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"username": {
+					"type": "string"
+				},
+				"email": {
+					"type": "string"
+				},
+				"password": {
+					"type": "string",
+					"format": "password"
+				},
+				"address": {
+					"type": "string"
+				}
+			}
+		},
+		"Error": {
+			"type": "object",
+			"properties": {
+				"error": {
+					"type": "boolean"
+				},
+				"body": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"externalDocs": {
+		"description": "Find out more about Swagger",
+		"url": "http://swagger.io"
+	}
+}

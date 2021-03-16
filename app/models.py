@@ -37,16 +37,19 @@ class UserData:
 
 
 class ProductData:
-    def __init__(self, id, name, extra_ingredients):
+    def __init__(self, id, name, ingredients, price, extra_ingredients):
         self._id = str(id)
         self.name = name
-
+        self.ingredients = ingredients
+        self.price = f"{str(id)}$"
         self.extra_ingredients = extra_ingredients
 
     def product(self):
         return {
             "_id": self._id,
             "name": self.name,
+            "ingredients": self.ingredients,
+            "price": self.price,
             "extra_ingredients": self.extra_ingredients,
         }
 
