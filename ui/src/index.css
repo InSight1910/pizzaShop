@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
+* {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	outline: #fff;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+body {
+	font-family: "DM Sans", sans-serif;
+	background-color: var(--background);
+}
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+:root {
+	--primary-color: hsla(4, 99%, 64%, 1);
+	--gradient: linear-gradient(
+		108.73deg,
+		#f9881f 23.73%,
+		#f9881f 23.73%,
+		#ff774c 79.34%
+	);
+	--accent: hsla(168, 83%, 25%, 1);
+	--black: hsla(212, 13%, 19%, 1);
+	--gray-4: hsla(212, 3%, 67%, 1);
+	--gray-3: hsla(210, 12%, 89%, 1);
+	--gray-1: hsla(0, 0%, 99%, 1);
+	--background: hsla(240, 33%, 98%, 1);
+	--background-switch-on: hsla(135, 59%, 49%, 1);
+	--background-switch-off: hsla(212, 3%, 67%, 1);
+	--color-title: hsla(0, 0%, 24%, 1);
+	--color-subtitle: hsla(0, 0%, 11%, 1);
+}
